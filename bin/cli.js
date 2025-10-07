@@ -117,6 +117,7 @@ program
   .option('-a, --analyzers <analyzers>', 'Comma-separated list of analyzers to run (eslint,typescript,security,performance,dependencies,coverage,architecture,custom-rules,bug-detection,test-cases)')
   .option('-r, --reporters <reporters>', 'Comma-separated list of reporters to use')
   .option('--ai-prompts', 'Generate AI analysis prompts')
+  .option('--ai-analysis', 'Perform actual AI code analysis and testing')
   .option('--no-reports', 'Skip report generation')
   .option('-w, --watch', 'Watch for file changes and re-run analysis')
   .option('-v, --verbose', 'Verbose output')
@@ -141,6 +142,10 @@ program
       
       if (options.aiPrompts) {
         toolOptions.reporters = [...(toolOptions.reporters || []), 'ai-prompts'];
+      }
+      
+      if (options.aiAnalysis) {
+        toolOptions.reporters = [...(toolOptions.reporters || []), 'ai-analysis'];
       }
       
       if (options.noReports) {
@@ -194,6 +199,39 @@ program
           
           console.log(`  ${status} ${analyzer.charAt(0).toUpperCase() + analyzer.slice(1)}: ${summary}`);
         });
+      }
+      
+      // Show AI Analysis if available
+      if (results.reports && results.reports.aiAnalysis) {
+        console.log('\n🤖 AI Code Analysis Results:');
+        const aiAnalysis = results.reports.aiAnalysis;
+        
+        if (aiAnalysis.summary.totalIssues > 0) {
+          console.log(`  🔴 Critical Issues: ${aiAnalysis.summary.criticalIssues}`);
+          console.log(`  🟡 Code Improvements: ${aiAnalysis.summary.codeImprovements}`);
+          console.log(`  🔒 Security Fixes: ${aiAnalysis.summary.securityFixes}`);
+        }
+        
+        if (aiAnalysis.summary.totalSuggestions > 0) {
+          console.log(`  🧪 Test Suggestions: ${aiAnalysis.summary.testSuggestions}`);
+          console.log(`  ♻️  Refactoring Suggestions: ${aiAnalysis.summary.refactoringSuggestions}`);
+        }
+        
+        if (aiAnalysis.recommendations.length > 0) {
+          console.log(`  💡 Recommendations: ${aiAnalysis.recommendations.length}`);
+          
+          // Show top 3 recommendations
+          aiAnalysis.recommendations.slice(0, 3).forEach((rec, index) => {
+            const priority = rec.priority === 'CRITICAL' ? '🔴' : rec.priority === 'HIGH' ? '🟠' : '🟡';
+            console.log(`    ${priority} ${rec.category}: ${rec.issue}`);
+            console.log(`       → ${rec.suggestion}`);
+            if (rec.action) {
+              console.log(`       → Action: ${rec.action}`);
+            }
+          });
+        }
+        
+        console.log(`  📊 Priority Level: ${aiAnalysis.summary.priority}`);
       }
       
       // Show reports
