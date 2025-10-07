@@ -119,6 +119,9 @@ For comprehensive documentation, implementation guides, and detailed usage instr
 - **[Implementation Guide](docs/IMPLEMENTATION_GUIDE.md)** - Complete setup walkthrough
 - **[Code Quality System](docs/CODE_QUALITY_SYSTEM.md)** - Quality standards and rules
 - **[Publishing Guide](docs/PUBLISHING_GUIDE.md)** - Publishing and distribution
+- **[Developer Workflow](DEVELOPER_WORKFLOW.md)** - Complete developer flow with local tools
+- **[Implementation Files](IMPLEMENTATION_FILES.md)** - Files to add/update in microservices
+- **[Flow Diagram](DEVELOPER_FLOW_DIAGRAM.md)** - Visual workflow representation
 
 ## 🏗️ Development
 

@@ -114,7 +114,7 @@ program
   .command('analyze')
   .description('Run code analysis')
   .option('-s, --severity <level>', 'Minimum severity level (info, warning, error, critical)', 'warning')
-  .option('-a, --analyzers <analyzers>', 'Comma-separated list of analyzers to run')
+  .option('-a, --analyzers <analyzers>', 'Comma-separated list of analyzers to run (eslint,typescript,security,performance,dependencies,coverage,architecture,custom-rules)')
   .option('-r, --reporters <reporters>', 'Comma-separated list of reporters to use')
   .option('--ai-prompts', 'Generate AI analysis prompts')
   .option('--no-reports', 'Skip report generation')
