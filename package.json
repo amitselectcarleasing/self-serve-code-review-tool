@@ -1,6 +1,6 @@
 {
   "name": "@selectamitpatra/code-review-tool",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Universal code review and quality analysis tool for microservices",
   "main": "lib/index.js",
   "bin": {
@@ -20,7 +20,7 @@
   "keywords": [
     "code-review",
     "quality",
-    "microservices", 
+    "microservices",
     "eslint",
     "typescript",
     "static-analysis",
