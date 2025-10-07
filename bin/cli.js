@@ -183,7 +183,11 @@ program
           if (result.errors !== undefined) summary += `${result.errors} errors, `;
           if (result.warnings !== undefined) summary += `${result.warnings} warnings, `;
           if (result.violations !== undefined) summary += `${result.violations} violations, `;
-          if (result.coverage !== undefined) summary += `${result.coverage}% coverage, `;
+          if (result.coverage !== undefined) {
+            const coverageValue = typeof result.coverage === 'number' ? result.coverage : 
+                                 (result.coverage.statements ? result.coverage.statements.pct : 0);
+            summary += `${coverageValue}% coverage, `;
+          }
           if (result.vulnerabilities !== undefined) summary += `${result.vulnerabilities} vulnerabilities, `;
           
           summary = summary.replace(/, $/, '') || 'completed';
