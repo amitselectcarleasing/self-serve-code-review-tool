@@ -1,6 +1,6 @@
 {
   "name": "@selectamitpatra/code-review-tool",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Universal code review and quality analysis tool for microservices",
   "main": "lib/index.js",
   "bin": {
