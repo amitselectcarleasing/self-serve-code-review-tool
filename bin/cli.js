@@ -143,6 +143,10 @@ program
         toolOptions.reporters = [...(toolOptions.reporters || []), 'ai-prompts'];
       }
       
+      if (options.noReports) {
+        toolOptions.reporters = [];
+      }
+      
       // Create and run analysis
       const tool = new CodeReviewTool(toolOptions);
       
