@@ -157,7 +157,7 @@ program
         return;
       }
       
-      const results = await tool.analyze(options);
+      const results = await tool.analyze(toolOptions);
       
       // Display results
       console.log('\n' + '='.repeat(60));
