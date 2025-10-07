@@ -1,0 +1,66 @@
+{
+  "name": "@self-serve/code-review-tool",
+  "version": "1.0.0",
+  "description": "Universal code review and quality analysis tool for microservices",
+  "main": "lib/index.js",
+  "bin": {
+    "self-serve-review": "bin/cli.js"
+  },
+  "scripts": {
+    "test": "jest tests/",
+    "build": "echo 'Build step - copy files if needed'",
+    "prepublishOnly": "npm test",
+    "dev": "node bin/cli.js",
+    "lint": "echo 'Linting step'",
+    "validate": "node lib/validate-package.js",
+    "publish-check": "node scripts/publish.js",
+    "publish-github": "npm publish",
+    "publish-private": "npm publish --registry"
+  },
+  "keywords": [
+    "code-review",
+    "quality",
+    "microservices", 
+    "eslint",
+    "typescript",
+    "static-analysis",
+    "ai-integration",
+    "cursor-ai"
+  ],
+  "author": "Self-Serve Platform Team",
+  "license": "MIT",
+  "files": [
+    "lib/",
+    "bin/",
+    "templates/",
+    "analyzers/",
+    "reporters/",
+    "README.md"
+  ],
+  "dependencies": {
+    "commander": "^9.4.1",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.1.1",
+    "glob": "^8.1.0",
+    "inquirer": "^8.2.5",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.0",
+    "jest": "^29.5.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amitselectcarleasing/self-serve-code-review-tool.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "bugs": {
+    "url": "https://github.com/amitselectcarleasing/self-serve-code-review-tool/issues"
+  },
+  "homepage": "https://github.com/amitselectcarleasing/self-serve-code-review-tool#readme"
+}

@@ -1,0 +1,212 @@
+{
+  "metadata": {
+    "name": "API Gateway Rules",
+    "version": "1.0.0",
+    "description": "Code review rules specifically designed for API Gateway services",
+    "created": "2025-10-06",
+    "author": "Self-Serve Platform Team",
+    "tags": ["api-gateway", "proxy", "middleware", "routing"]
+  },
+  "categories": {
+    "proxy": {
+      "priority": "HIGH",
+      "description": "Proxy and middleware configuration issues"
+    },
+    "routing": {
+      "priority": "HIGH", 
+      "description": "API routing and endpoint management"
+    },
+    "authentication": {
+      "priority": "CRITICAL",
+      "description": "Authentication and authorization security"
+    },
+    "performance": {
+      "priority": "HIGH",
+      "description": "Performance-critical issues that affect response times"
+    },
+    "security": {
+      "priority": "CRITICAL",
+      "description": "Security vulnerabilities and data exposure risks"
+    },
+    "maintainability": {
+      "priority": "MEDIUM",
+      "description": "Code quality issues that affect long-term maintenance"
+    }
+  },
+  "rules": [
+    {
+      "id": "no-console-log-production",
+      "category": "performance",
+      "severity": "ERROR",
+      "description": "Avoid using console.log in production code - it blocks the event loop",
+      "pattern": "console\\.(log|info|warn|error)",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Use a proper async logger (Winston, Pino) instead of console methods",
+      "example": {
+        "bad": "console.log('Request received:', req.body);",
+        "good": "logger.info('Request received', { body: req.body });"
+      },
+      "impact": "Each console.log call is synchronous and can slow down request processing"
+    },
+    {
+      "id": "proxy-timeout-configuration",
+      "category": "proxy",
+      "severity": "WARNING",
+      "description": "Proxy timeouts should be configurable via environment variables",
+      "pattern": "timeout:\\s*\\d+|proxyTimeout:\\s*\\d+",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Use environment variables for timeout configuration",
+      "example": {
+        "bad": "timeout: 30000",
+        "good": "timeout: parseInt(process.env.PROXY_TIMEOUT || '30000')"
+      },
+      "impact": "Hardcoded timeouts make it difficult to tune performance in different environments"
+    },
+    {
+      "id": "jwt-secret-hardcoded",
+      "category": "authentication",
+      "severity": "CRITICAL",
+      "description": "JWT secrets must not be hardcoded",
+      "pattern": "jwt\\.sign\\(.*['\"][^'\"]*['\"]|jwt\\.verify\\(.*['\"][^'\"]*['\"]",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Use environment variables for JWT secrets",
+      "example": {
+        "bad": "jwt.sign(payload, 'hardcoded-secret');",
+        "good": "jwt.sign(payload, process.env.JWT_SECRET);"
+      },
+      "impact": "Hardcoded secrets are major security vulnerabilities"
+    },
+    {
+      "id": "sensitive-data-logging",
+      "category": "security",
+      "severity": "CRITICAL",
+      "description": "Never log sensitive data like passwords, tokens, or personal information",
+      "pattern": "console\\.(log|info|warn|error).*(?:password|token|secret|key|auth|bearer|headers)",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Remove sensitive data from logs or sanitize before logging",
+      "example": {
+        "bad": "console.log('Headers:', req.headers);",
+        "good": "console.log('Headers:', sanitizeHeaders(req.headers));"
+      },
+      "impact": "Logging sensitive data creates security vulnerabilities and compliance issues"
+    },
+    {
+      "id": "missing-input-validation",
+      "category": "security",
+      "severity": "ERROR",
+      "description": "All API endpoints must validate input parameters",
+      "pattern": "router\\.(get|post|put|delete)\\(",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Add input validation middleware (Joi, Yup, or express-validator)",
+      "example": {
+        "bad": "router.post('/api/users', (req, res) => { /* no validation */ });",
+        "good": "router.post('/api/users', validateUserInput, (req, res) => { /* validated input */ });"
+      },
+      "impact": "Missing input validation can lead to injection attacks and data corruption"
+    },
+    {
+      "id": "missing-rate-limiting",
+      "category": "security",
+      "severity": "ERROR",
+      "description": "All public endpoints should have rate limiting",
+      "pattern": "router\\.(get|post|put|delete)\\(['\"][^'\"]*['\"]",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Apply rate limiting middleware to public endpoints",
+      "example": {
+        "bad": "router.get('/api/public', handler);",
+        "good": "router.get('/api/public', rateLimiter, handler);"
+      },
+      "impact": "Missing rate limiting enables DoS attacks and resource abuse"
+    },
+    {
+      "id": "cors-wildcard-origin",
+      "category": "security",
+      "severity": "ERROR",
+      "description": "CORS should not use wildcard (*) origin in production",
+      "pattern": "origin:\\s*['\"]\\*['\"]|cors\\(\\{[^}]*origin:\\s*true",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Specify allowed origins explicitly",
+      "example": {
+        "bad": "cors({ origin: '*' });",
+        "good": "cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') });"
+      },
+      "impact": "Wildcard CORS allows any domain to make requests, creating security risks"
+    },
+    {
+      "id": "async-error-handling",
+      "category": "routing",
+      "severity": "ERROR",
+      "description": "All async route handlers must handle errors with try/catch",
+      "pattern": "async\\s+\\([^)]*\\)\\s*=>|async\\s+function",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Wrap async logic in try/catch or use centralized error handler",
+      "example": {
+        "bad": "async (req, res) => { await someAsyncOperation(); }",
+        "good": "async (req, res) => { try { await someAsyncOperation(); } catch (error) { handleError(error, res); } }"
+      },
+      "impact": "Unhandled async errors can crash the application"
+    },
+    {
+      "id": "proxy-error-handling",
+      "category": "proxy",
+      "severity": "WARNING",
+      "description": "Proxy middleware should handle target service errors gracefully",
+      "pattern": "createProxyMiddleware|http-proxy-middleware",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Add onError handler to proxy configuration",
+      "example": {
+        "bad": "createProxyMiddleware({ target: 'http://service' });",
+        "good": "createProxyMiddleware({ target: 'http://service', onError: handleProxyError });"
+      },
+      "impact": "Unhandled proxy errors can expose internal service details"
+    },
+    {
+      "id": "unused-imports",
+      "category": "maintainability",
+      "severity": "WARNING",
+      "description": "Remove unused imports to reduce bundle size",
+      "pattern": "import.*from.*['\"].*['\"];?",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Remove unused imports or use tree-shaking",
+      "example": {
+        "bad": "import { unused } from 'module'; // unused is never used",
+        "good": "import { used } from 'module'; // only import what you use"
+      },
+      "impact": "Unused imports increase bundle size and compilation time"
+    },
+    {
+      "id": "error-response-consistency",
+      "category": "routing",
+      "severity": "WARNING",
+      "description": "Error responses should follow consistent format",
+      "pattern": "res\\.status\\(\\d+\\)\\.json\\(\\{.*error",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Use standardized error response format",
+      "example": {
+        "bad": "res.status(500).json({ err: 'Something went wrong' });",
+        "good": "res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Something went wrong' } });"
+      },
+      "impact": "Inconsistent error formats confuse API consumers and complicate error handling"
+    },
+    {
+      "id": "health-check-implementation",
+      "category": "routing",
+      "severity": "WARNING",
+      "description": "Health check endpoints should verify downstream service connectivity",
+      "pattern": "/health|/healthz|/ready",
+      "files": ["src/**/*.ts"],
+      "suggestion": "Implement comprehensive health checks that verify dependencies",
+      "example": {
+        "bad": "app.get('/health', (req, res) => res.json({ status: 'OK' }));",
+        "good": "app.get('/health', async (req, res) => { const health = await checkDependencies(); res.json(health); });"
+      },
+      "impact": "Shallow health checks don't detect downstream service failures"
+    }
+  ],
+  "customPrompts": {
+    "focusedAnalysis": "Analyze the API Gateway codebase focusing ONLY on the rules defined above. For each rule violation found, provide: 1) Exact line number, 2) Rule ID violated, 3) Specific fix suggestion, 4) Impact assessment.",
+    "securityFocus": "Focus on CRITICAL and ERROR security rules: JWT secrets, sensitive data logging, CORS configuration, input validation, and rate limiting. Look for authentication bypass opportunities and data exposure risks.",
+    "performanceFocus": "Analyze performance-related rules: console.log blocking operations, proxy timeout configurations, and async error handling. Look for bottlenecks in request processing pipeline.",
+    "proxyFocus": "Focus specifically on proxy and middleware configuration: timeout settings, error handling, request/response transformation, and service discovery patterns."
+  }
+}

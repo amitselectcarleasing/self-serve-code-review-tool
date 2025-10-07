@@ -1,0 +1,240 @@
+{
+  "metadata": {
+    "name": "Backend Service Rules",
+    "version": "1.0.0",
+    "description": "Code review rules for backend microservices with database and API functionality",
+    "created": "2025-10-06",
+    "author": "Self-Serve Platform Team",
+    "tags": ["backend", "microservice", "database", "api", "rest"]
+  },
+  "categories": {
+    "database": {
+      "priority": "HIGH",
+      "description": "Database connection, query, and transaction management"
+    },
+    "api": {
+      "priority": "HIGH",
+      "description": "REST API design and implementation"
+    },
+    "security": {
+      "priority": "CRITICAL",
+      "description": "Security vulnerabilities and data protection"
+    },
+    "performance": {
+      "priority": "HIGH",
+      "description": "Performance optimization and resource management"
+    },
+    "error-handling": {
+      "priority": "HIGH",
+      "description": "Error handling and logging practices"
+    },
+    "maintainability": {
+      "priority": "MEDIUM",
+      "description": "Code organization and maintainability"
+    }
+  },
+  "rules": [
+    {
+      "id": "database-connection-pooling",
+      "category": "database",
+      "severity": "ERROR",
+      "description": "Database connections should use connection pooling",
+      "pattern": "new\\s+(?:Client|Connection)\\(|createConnection\\(",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Use connection pooling for database connections",
+      "example": {
+        "bad": "const client = new Client(config);",
+        "good": "const pool = new Pool(config); // reuse connections"
+      },
+      "impact": "Without pooling, each request creates new DB connections, causing performance issues"
+    },
+    {
+      "id": "sql-injection-prevention",
+      "category": "security",
+      "severity": "CRITICAL",
+      "description": "Use parameterized queries to prevent SQL injection",
+      "pattern": "query\\(['\"][^'\"]*\\$\\{|query\\(['\"][^'\"]*\\+",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Use parameterized queries or prepared statements",
+      "example": {
+        "bad": "query(`SELECT * FROM users WHERE id = ${userId}`);",
+        "good": "query('SELECT * FROM users WHERE id = $1', [userId]);"
+      },
+      "impact": "String concatenation in SQL queries enables SQL injection attacks"
+    },
+    {
+      "id": "transaction-error-handling",
+      "category": "database",
+      "severity": "ERROR",
+      "description": "Database transactions must handle errors and rollback properly",
+      "pattern": "BEGIN|begin\\(\\)|transaction\\(\\)",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Wrap transactions in try/catch with proper rollback",
+      "example": {
+        "bad": "await client.query('BEGIN'); await client.query('INSERT...');",
+        "good": "try { await client.query('BEGIN'); await client.query('INSERT...'); await client.query('COMMIT'); } catch (error) { await client.query('ROLLBACK'); throw error; }"
+      },
+      "impact": "Unhandled transaction errors can leave database in inconsistent state"
+    },
+    {
+      "id": "api-input-validation",
+      "category": "api",
+      "severity": "ERROR",
+      "description": "All API endpoints must validate input data",
+      "pattern": "app\\.(get|post|put|delete)|router\\.(get|post|put|delete)",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Add input validation middleware (Joi, Yup, express-validator)",
+      "example": {
+        "bad": "app.post('/users', (req, res) => { const user = req.body; });",
+        "good": "app.post('/users', validateUser, (req, res) => { const user = req.body; });"
+      },
+      "impact": "Missing input validation leads to data corruption and security vulnerabilities"
+    },
+    {
+      "id": "password-hashing",
+      "category": "security",
+      "severity": "CRITICAL",
+      "description": "Passwords must be properly hashed before storage",
+      "pattern": "password.*=.*req\\.body|INSERT.*password.*VALUES",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Hash passwords using bcrypt or similar before storing",
+      "example": {
+        "bad": "const user = { password: req.body.password };",
+        "good": "const user = { password: await bcrypt.hash(req.body.password, 10) };"
+      },
+      "impact": "Storing plain text passwords is a critical security vulnerability"
+    },
+    {
+      "id": "sensitive-data-exposure",
+      "category": "security",
+      "severity": "CRITICAL",
+      "description": "Never return sensitive data in API responses",
+      "pattern": "res\\.json\\(.*password|res\\.send\\(.*password",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Exclude sensitive fields from API responses",
+      "example": {
+        "bad": "res.json(user); // includes password field",
+        "good": "res.json({ id: user.id, email: user.email }); // exclude password"
+      },
+      "impact": "Exposing sensitive data in responses creates security risks"
+    },
+    {
+      "id": "async-error-handling",
+      "category": "error-handling",
+      "severity": "ERROR",
+      "description": "All async functions must handle errors properly",
+      "pattern": "async\\s+(?:function|\\()",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Wrap async operations in try/catch blocks",
+      "example": {
+        "bad": "async function getUser(id) { return await db.findUser(id); }",
+        "good": "async function getUser(id) { try { return await db.findUser(id); } catch (error) { logger.error('Failed to get user', error); throw error; } }"
+      },
+      "impact": "Unhandled async errors can crash the application"
+    },
+    {
+      "id": "structured-logging",
+      "category": "error-handling",
+      "severity": "WARNING",
+      "description": "Use structured logging instead of console methods",
+      "pattern": "console\\.(log|info|warn|error)",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Use structured logger (Winston, Pino) with proper log levels",
+      "example": {
+        "bad": "console.log('User created:', userId);",
+        "good": "logger.info('User created', { userId, timestamp: new Date() });"
+      },
+      "impact": "Console logging lacks structure and makes log analysis difficult"
+    },
+    {
+      "id": "environment-config",
+      "category": "maintainability",
+      "severity": "WARNING",
+      "description": "Configuration values should come from environment variables",
+      "pattern": "port.*=.*\\d+|host.*=.*['\"]|database.*=.*['\"]",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Use environment variables for configuration",
+      "example": {
+        "bad": "const port = 3000;",
+        "good": "const port = process.env.PORT || 3000;"
+      },
+      "impact": "Hardcoded configuration makes deployment and scaling difficult"
+    },
+    {
+      "id": "api-versioning",
+      "category": "api",
+      "severity": "WARNING",
+      "description": "API endpoints should include version information",
+      "pattern": "app\\.(get|post|put|delete)\\(['\"][^'\"]*['\"]",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Include version prefix in API routes (/v1/, /v2/, etc.)",
+      "example": {
+        "bad": "app.get('/users', handler);",
+        "good": "app.get('/v1/users', handler);"
+      },
+      "impact": "Unversioned APIs make it difficult to evolve without breaking clients"
+    },
+    {
+      "id": "database-query-optimization",
+      "category": "performance",
+      "severity": "WARNING",
+      "description": "Avoid N+1 query problems and use efficient queries",
+      "pattern": "for.*await.*query|forEach.*await.*query",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Use batch queries or joins instead of loops with queries",
+      "example": {
+        "bad": "for (const id of userIds) { await query('SELECT * FROM users WHERE id = $1', [id]); }",
+        "good": "await query('SELECT * FROM users WHERE id = ANY($1)', [userIds]);"
+      },
+      "impact": "N+1 queries cause severe performance problems with large datasets"
+    },
+    {
+      "id": "response-time-monitoring",
+      "category": "performance",
+      "severity": "WARNING",
+      "description": "Monitor and log API response times",
+      "pattern": "app\\.(get|post|put|delete)|router\\.(get|post|put|delete)",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Add response time monitoring middleware",
+      "example": {
+        "bad": "app.get('/users', handler);",
+        "good": "app.get('/users', responseTimeMiddleware, handler);"
+      },
+      "impact": "Without monitoring, performance degradation goes unnoticed"
+    },
+    {
+      "id": "graceful-shutdown",
+      "category": "maintainability",
+      "severity": "WARNING",
+      "description": "Implement graceful shutdown for database connections",
+      "pattern": "process\\.on\\(['\"]SIGTERM|process\\.on\\(['\"]SIGINT",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Close database connections and finish requests before shutdown",
+      "example": {
+        "bad": "process.on('SIGTERM', () => process.exit(0));",
+        "good": "process.on('SIGTERM', async () => { await db.close(); server.close(); });"
+      },
+      "impact": "Abrupt shutdowns can cause data corruption and connection leaks"
+    },
+    {
+      "id": "cors-configuration",
+      "category": "security",
+      "severity": "ERROR",
+      "description": "CORS should be properly configured for production",
+      "pattern": "cors\\(\\)|app\\.use\\(cors",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Configure CORS with specific origins and methods",
+      "example": {
+        "bad": "app.use(cors());",
+        "good": "app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(','), methods: ['GET', 'POST'] }));"
+      },
+      "impact": "Misconfigured CORS can expose APIs to unauthorized domains"
+    }
+  ],
+  "customPrompts": {
+    "focusedAnalysis": "Analyze the backend service codebase focusing ONLY on the rules defined above. For each rule violation found, provide: 1) Exact line number, 2) Rule ID violated, 3) Specific fix suggestion, 4) Impact assessment.",
+    "securityFocus": "Focus on CRITICAL security rules: SQL injection prevention, password hashing, sensitive data exposure, and CORS configuration. Look for authentication and authorization vulnerabilities.",
+    "databaseFocus": "Analyze database-related rules: connection pooling, transaction handling, query optimization, and graceful shutdown. Look for performance bottlenecks and data integrity issues.",
+    "apiFocus": "Focus on API design rules: input validation, versioning, response time monitoring, and error handling. Look for REST API best practices violations."
+  }
+}

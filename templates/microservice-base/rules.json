@@ -1,0 +1,226 @@
+{
+  "metadata": {
+    "name": "Microservice Base Rules",
+    "version": "1.0.0",
+    "description": "Common code review rules applicable to all microservices",
+    "created": "2025-10-06",
+    "author": "Self-Serve Platform Team",
+    "tags": ["microservice", "base", "common", "universal"]
+  },
+  "categories": {
+    "logging": {
+      "priority": "MEDIUM",
+      "description": "Logging and monitoring standards"
+    },
+    "security": {
+      "priority": "HIGH",
+      "description": "Basic security practices"
+    },
+    "performance": {
+      "priority": "MEDIUM",
+      "description": "General performance considerations"
+    },
+    "maintainability": {
+      "priority": "MEDIUM",
+      "description": "Code quality and maintainability"
+    },
+    "containerization": {
+      "priority": "LOW",
+      "description": "Docker and containerization best practices"
+    },
+    "monitoring": {
+      "priority": "MEDIUM",
+      "description": "Health checks and observability"
+    }
+  },
+  "rules": [
+    {
+      "id": "structured-logging",
+      "category": "logging",
+      "severity": "WARNING",
+      "description": "Use structured logging format instead of console methods",
+      "pattern": "console\\.(log|info|warn|error)",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Use structured logger (Winston, Pino) with proper log levels and context",
+      "example": {
+        "bad": "console.log('Processing request for user:', userId);",
+        "good": "logger.info('Processing request', { userId, service: 'user-service' });"
+      },
+      "impact": "Console logging lacks structure, context, and proper log levels"
+    },
+    {
+      "id": "environment-variables",
+      "category": "maintainability",
+      "severity": "WARNING",
+      "description": "Use environment variables for configuration",
+      "pattern": "const\\s+\\w+\\s*=\\s*['\"](?:http://|https://|\\d+\\.|localhost)",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Move hardcoded values to environment variables",
+      "example": {
+        "bad": "const dbUrl = 'postgresql://localhost:5432/mydb';",
+        "good": "const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost:5432/mydb';"
+      },
+      "impact": "Hardcoded configuration makes services difficult to deploy across environments"
+    },
+    {
+      "id": "health-check-endpoint",
+      "category": "monitoring",
+      "severity": "WARNING",
+      "description": "Every microservice should have a health check endpoint",
+      "pattern": "/health|/healthz|/ready|/live",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Implement comprehensive health checks that verify dependencies",
+      "example": {
+        "bad": "// No health check endpoint",
+        "good": "app.get('/health', async (req, res) => { const status = await checkDependencies(); res.json(status); });"
+      },
+      "impact": "Without health checks, orchestrators cannot determine service health"
+    },
+    {
+      "id": "error-handling-middleware",
+      "category": "maintainability",
+      "severity": "WARNING",
+      "description": "Use centralized error handling middleware",
+      "pattern": "app\\.use\\(.*error|errorHandler",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Implement global error handling middleware",
+      "example": {
+        "bad": "// Scattered error handling in routes",
+        "good": "app.use((error, req, res, next) => { logger.error('Unhandled error', error); res.status(500).json({ error: 'Internal server error' }); });"
+      },
+      "impact": "Without centralized error handling, errors may go unlogged or cause crashes"
+    },
+    {
+      "id": "secrets-management",
+      "category": "security",
+      "severity": "ERROR",
+      "description": "Never hardcode secrets, passwords, or API keys",
+      "pattern": "password.*=.*['\"][^'\"]+['\"]|secret.*=.*['\"][^'\"]+['\"]|key.*=.*['\"][^'\"]+['\"]",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Use environment variables or secret management systems",
+      "example": {
+        "bad": "const apiKey = 'sk-1234567890abcdef';",
+        "good": "const apiKey = process.env.API_KEY;"
+      },
+      "impact": "Hardcoded secrets in code are major security vulnerabilities"
+    },
+    {
+      "id": "graceful-shutdown",
+      "category": "maintainability",
+      "severity": "WARNING",
+      "description": "Implement graceful shutdown handling",
+      "pattern": "process\\.on\\(['\"]SIGTERM|process\\.on\\(['\"]SIGINT",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Handle shutdown signals to close connections gracefully",
+      "example": {
+        "bad": "// No shutdown handling",
+        "good": "process.on('SIGTERM', async () => { await closeConnections(); server.close(); });"
+      },
+      "impact": "Abrupt shutdowns can cause data loss and connection leaks"
+    },
+    {
+      "id": "request-correlation-id",
+      "category": "logging",
+      "severity": "WARNING",
+      "description": "Use correlation IDs to track requests across services",
+      "pattern": "req\\.headers\\[.*correlation|x-correlation-id|x-request-id",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Add middleware to generate/forward correlation IDs",
+      "example": {
+        "bad": "// No request correlation",
+        "good": "app.use((req, res, next) => { req.correlationId = req.headers['x-correlation-id'] || generateId(); next(); });"
+      },
+      "impact": "Without correlation IDs, tracing requests across microservices is difficult"
+    },
+    {
+      "id": "async-error-handling",
+      "category": "maintainability",
+      "severity": "ERROR",
+      "description": "All async functions must handle errors properly",
+      "pattern": "async\\s+(?:function|\\()",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Wrap async operations in try/catch blocks",
+      "example": {
+        "bad": "async function processData() { await externalService.call(); }",
+        "good": "async function processData() { try { await externalService.call(); } catch (error) { logger.error('Processing failed', error); throw error; } }"
+      },
+      "impact": "Unhandled async errors can crash the entire service"
+    },
+    {
+      "id": "dockerfile-optimization",
+      "category": "containerization",
+      "severity": "INFO",
+      "description": "Dockerfile should follow best practices for optimization",
+      "pattern": "FROM|RUN|COPY|ADD",
+      "files": ["Dockerfile", "*.dockerfile"],
+      "suggestion": "Use multi-stage builds, minimize layers, and use specific base image versions",
+      "example": {
+        "bad": "FROM node:latest\nRUN npm install",
+        "good": "FROM node:18-alpine\nCOPY package*.json ./\nRUN npm ci --only=production"
+      },
+      "impact": "Unoptimized Docker images are larger and slower to deploy"
+    },
+    {
+      "id": "unused-dependencies",
+      "category": "maintainability",
+      "severity": "WARNING",
+      "description": "Remove unused dependencies to reduce bundle size",
+      "pattern": "import.*from.*['\"].*['\"]",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Regularly audit and remove unused dependencies",
+      "example": {
+        "bad": "import { unused } from 'large-library'; // never used",
+        "good": "// Only import what you actually use"
+      },
+      "impact": "Unused dependencies increase bundle size and security surface area"
+    },
+    {
+      "id": "api-timeout-configuration",
+      "category": "performance",
+      "severity": "WARNING",
+      "description": "Configure appropriate timeouts for external API calls",
+      "pattern": "fetch\\(|axios\\.|http\\.request",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Set explicit timeouts for all external HTTP requests",
+      "example": {
+        "bad": "await fetch('https://api.example.com/data');",
+        "good": "await fetch('https://api.example.com/data', { timeout: 5000 });"
+      },
+      "impact": "Missing timeouts can cause services to hang indefinitely"
+    },
+    {
+      "id": "service-discovery",
+      "category": "maintainability",
+      "severity": "INFO",
+      "description": "Use service discovery instead of hardcoded service URLs",
+      "pattern": "http://.*:\\d+|https://.*:\\d+",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Use service discovery or environment variables for service URLs",
+      "example": {
+        "bad": "const serviceUrl = 'http://user-service:3001';",
+        "good": "const serviceUrl = process.env.USER_SERVICE_URL || 'http://user-service:3001';"
+      },
+      "impact": "Hardcoded URLs make services tightly coupled and difficult to scale"
+    },
+    {
+      "id": "metrics-collection",
+      "category": "monitoring",
+      "severity": "INFO",
+      "description": "Collect and expose metrics for monitoring",
+      "pattern": "prometheus|metrics|/metrics",
+      "files": ["src/**/*.ts", "src/**/*.js"],
+      "suggestion": "Add metrics collection for key business and technical metrics",
+      "example": {
+        "bad": "// No metrics collection",
+        "good": "const requestCounter = new Counter({ name: 'http_requests_total', help: 'Total HTTP requests' });"
+      },
+      "impact": "Without metrics, it's difficult to monitor service performance and health"
+    }
+  ],
+  "customPrompts": {
+    "focusedAnalysis": "Analyze the microservice codebase focusing ONLY on the rules defined above. For each rule violation found, provide: 1) Exact line number, 2) Rule ID violated, 3) Specific fix suggestion, 4) Impact assessment.",
+    "securityFocus": "Focus on security rules: secrets management, error handling, and basic security practices. Look for hardcoded credentials and unhandled errors.",
+    "observabilityFocus": "Analyze observability rules: structured logging, health checks, correlation IDs, and metrics collection. Look for monitoring and debugging gaps.",
+    "deploymentFocus": "Focus on deployment and containerization: environment variables, graceful shutdown, Dockerfile optimization, and service discovery patterns."
+  }
+}
