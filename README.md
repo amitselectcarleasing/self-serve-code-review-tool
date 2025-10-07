@@ -111,11 +111,20 @@ Overall Score: 78/100 (B-)
 - AI Prompts: ./reports/ai-prompts.md
 ```
 
+## 📚 Documentation
+
+For comprehensive documentation, implementation guides, and detailed usage instructions, see the [docs/](docs/) folder:
+
+- **[Quick Reference](docs/QUICK_REFERENCE.md)** - Quick start guide
+- **[Implementation Guide](docs/IMPLEMENTATION_GUIDE.md)** - Complete setup walkthrough
+- **[Code Quality System](docs/CODE_QUALITY_SYSTEM.md)** - Quality standards and rules
+- **[Publishing Guide](docs/PUBLISHING_GUIDE.md)** - Publishing and distribution
+
 ## 🏗️ Development
 
 ```bash
 # Clone repository
-git clone https://github.com/self-serve-platform/code-review-tool.git
+git clone https://github.com/amitselectcarleasing/self-serve-code-review-tool.git
 
 # Install dependencies
 npm install
