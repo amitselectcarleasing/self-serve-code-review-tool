@@ -57,7 +57,7 @@
     "url": "https://github.com/amitselectcarleasing/self-serve-code-review-tool.git"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "bugs": {
     "url": "https://github.com/amitselectcarleasing/self-serve-code-review-tool/issues"
