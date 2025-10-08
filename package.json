@@ -1,6 +1,6 @@
 {
   "name": "@amitselectcarleasing/code-review-tool",
-  "version": "1.3.0",
+  "version": "1.3.3",
   "description": "Universal code review and quality analysis tool for microservices",
   "main": "lib/index.js",
   "bin": {
