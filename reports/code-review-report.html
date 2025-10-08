@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Review Report - self-serve-code-review-tool</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; font-size: 2.5em; }
+        .header .subtitle { opacity: 0.9; margin-top: 10px; }
+        .content { padding: 30px; }
+        .score-card { background: #f44336; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 30px; }
+        .score-card .score { font-size: 3em; font-weight: bold; margin: 0; }
+        .score-card .grade { font-size: 1.5em; opacity: 0.9; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .analyzer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .analyzer-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
+        .analyzer-card.success { border-left: 4px solid #4CAF50; }
+        .analyzer-card.warning { border-left: 4px solid #FF9800; }
+        .analyzer-card.error { border-left: 4px solid #f44336; }
+        .analyzer-card h3 { margin-top: 0; color: #333; }
+        .stat { display: inline-block; margin-right: 20px; }
+        .stat-value { font-weight: bold; font-size: 1.2em; }
+        .issues-list { max-height: 300px; overflow-y: auto; }
+        .issue { padding: 10px; border-bottom: 1px solid #eee; }
+        .issue:last-child { border-bottom: none; }
+        .issue-severity { padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+        .severity-error { background: #ffebee; color: #c62828; }
+        .severity-warning { background: #fff3e0; color: #ef6c00; }
+        .severity-info { background: #e3f2fd; color: #1565c0; }
+        .footer { text-align: center; padding: 20px; color: #666; border-top: 1px solid #eee; }
+        .recommendations { background: #f8f9fa; border-radius: 8px; padding: 20px; }
+        .recommendation { margin-bottom: 15px; padding: 15px; background: white; border-radius: 4px; border-left: 4px solid #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Code Review Report</h1>
+            <div class="subtitle">
+                Project: self-serve-code-review-tool | Generated: 8/10/2025, 11:02:38 am | Template: none
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="score-card">
+                <div class="score">21/100</div>
+                <div class="grade">Grade: F</div>
+            </div>
+            
+            <div class="section">
+                <h2>📋 Analysis Summary</h2>
+                <div class="analyzer-grid">
+                    
+        <div class="analyzer-card error">
+          <h3>Eslint</h3>
+          <p>❌ Failed: No ESLint configuration found</p>
+          
+        </div>
+      
+        <div class="analyzer-card error">
+          <h3>Typescript</h3>
+          <p>❌ Failed: No tsconfig.json found</p>
+          
+        </div>
+      
+        <div class="analyzer-card success">
+          <h3>Security</h3>
+          <p>0 vulnerabilities found</p>
+          <div><span class="stat"><span class="stat-value">0</span> vulnerabilities</span></div>
+        </div>
+      
+        <div class="analyzer-card warning">
+          <h3>Tests</h3>
+          <p>0% coverage</p>
+          <div><span class="stat"><span class="stat-value">0%</span> coverage</span></div>
+        </div>
+      
+        <div class="analyzer-card error">
+          <h3>Complexity</h3>
+          <p>❌ Failed: No src directory found</p>
+          
+        </div>
+      
+        <div class="analyzer-card error">
+          <h3>Bug-detection</h3>
+          <p>❌ Failed: ENOENT: no such file or directory, scandir 'C:\Users\Admin\Documents\New folder\test\self-serve-application\self-serve-code-review-tool\src'</p>
+          
+        </div>
+      
+                </div>
+            </div>
+            
+            <div class="section"><h2>🎉 No Issues Found</h2><p>Great job! No significant issues were detected.</p></div>
+            
+            
+      <div class="section">
+        <h2>💡 Recommendations</h2>
+        <div class="recommendations">
+          
+            <div class="recommendation">
+              <strong>🚨 Critical Quality Issues</strong>
+              <p>Your code quality score is below 60%. Focus on fixing critical errors first.</p>
+              <p><em>Action: Run individual analyzers to identify and fix the most serious issues.</em></p>
+            </div>
+          
+            <div class="recommendation">
+              <strong>🧪 Test Coverage</strong>
+              <p>Test coverage is below recommended threshold (70%).</p>
+              <p><em>Action: Add unit tests for critical business logic and edge cases.</em></p>
+            </div>
+          
+        </div>
+      </div>
+    
+            
+            <div class="section">
+                <h2>⚙️ Configuration</h2>
+                <p><strong>Template:</strong> none</p>
+                <p><strong>Analyzers:</strong> 7 enabled</p>
+                <p><strong>Reporters:</strong> 1 enabled</p>
+                <p><strong>Rules:</strong> 0 custom rules</p>
+                <p><strong>AI Integration:</strong> ✅ Enabled</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Generated by @self-serve/code-review-tool v1.0.0
+        </div>
+    </div>
+</body>
+</html>
