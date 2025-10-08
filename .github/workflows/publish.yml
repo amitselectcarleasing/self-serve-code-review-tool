@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://npm.pkg.github.com'
-          scope: '@selectamitpatra'
+          scope: '@amitselectcarleasing'
           
       - name: Install dependencies
         run: npm ci
@@ -44,7 +44,7 @@ jobs:
       - name: Create release summary
         run: |
           echo "## 📦 Package Published Successfully!" >> $GITHUB_STEP_SUMMARY
-          echo "- **Package:** @selectamitpatra/code-review-tool" >> $GITHUB_STEP_SUMMARY
+          echo "- **Package:** @amitselectcarleasing/code-review-tool" >> $GITHUB_STEP_SUMMARY
           echo "- **Version:** $(node -p "require('./package.json').version")" >> $GITHUB_STEP_SUMMARY
           echo "- **Registry:** GitHub Packages" >> $GITHUB_STEP_SUMMARY
-          echo "- **Install:** \`npm install @selectamitpatra/code-review-tool\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Install:** \`npm install @amitselectcarleasing/code-review-tool\`" >> $GITHUB_STEP_SUMMARY
