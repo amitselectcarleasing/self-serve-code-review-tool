@@ -116,8 +116,8 @@ program
   .option('-s, --severity <level>', 'Minimum severity level (info, warning, error, critical)', 'warning')
   .option('-a, --analyzers <analyzers>', 'Comma-separated list of analyzers to run (eslint,typescript,security,performance,dependencies,coverage,architecture,custom-rules,bug-detection,test-cases)')
   .option('-r, --reporters <reporters>', 'Comma-separated list of reporters to use')
-  .option('--ai-prompts', 'Generate AI analysis prompts')
-  .option('--ai-analysis', 'Perform actual AI code analysis and testing')
+  .option('--ai-prompts', 'Generate AI analysis prompts (enables AI testing mode)')
+  .option('--ai-analysis', 'Perform actual AI code analysis and testing (enables AI testing mode)')
   .option('--no-reports', 'Skip report generation')
   .option('-w, --watch', 'Watch for file changes and re-run analysis')
   .option('-v, --verbose', 'Verbose output')
@@ -154,6 +154,16 @@ program
       
       // Create and run analysis
       const tool = new CodeReviewTool(toolOptions);
+      
+      // Determine testing mode
+      const isAITesting = options.aiAnalysis || options.aiPrompts || 
+                         (options.reporters && (options.reporters.includes('ai-analysis') || options.reporters.includes('ai-prompts')));
+      
+      if (isAITesting) {
+        log.info('🤖 Running in AI Testing Mode - Will generate HTML + AI Summary MD');
+      } else {
+        log.info('📊 Running in General Testing Mode - Will generate HTML only');
+      }
       
       if (options.watch) {
         log.info('Starting watch mode...');
