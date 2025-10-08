@@ -23,7 +23,7 @@ const log = {
 program
   .name('self-serve-review')
   .description('Universal code review tool for microservices')
-  .version('1.3.4');
+  .version('1.3.6');
 
 // Initialize command
 program
