@@ -1,7 +1,7 @@
 {
   "name": "self-serve-code-review-tool",
-  "version": "1.4.1",
-  "description": "Universal code review and quality analysis tool for microservices with weighted test scoring (80/20 split for core logic vs infrastructure)",
+  "version": "1.4.2",
+  "description": "Universal code review and quality analysis tool for microservices with weighted test scoring (80/20 split for core logic vs infrastructure, 10 points total)",
   "main": "lib/index.js",
   "bin": {
     "self-serve-review": "bin/cli.js"
