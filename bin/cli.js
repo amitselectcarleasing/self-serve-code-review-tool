@@ -199,8 +199,14 @@ program
           if (result.warnings !== undefined) summary += `${result.warnings} warnings, `;
           if (result.violations !== undefined) summary += `${result.violations} violations, `;
           if (result.coverage !== undefined) {
-            const coverageValue = typeof result.coverage === 'number' ? result.coverage : 
-                                 (result.coverage.statements ? result.coverage.statements.pct : 0);
+            // Support multiple coverage shapes: number, {statements:number}, {statements:{pct:number}}
+            let coverageValue = 0;
+            if (typeof result.coverage === 'number') {
+              coverageValue = result.coverage;
+            } else if (result.coverage && typeof result.coverage === 'object') {
+              coverageValue = 
+                (result.coverage.statements?.pct ?? result.coverage.statements ?? 0);
+            }
             summary += `${coverageValue}% coverage, `;
           }
           if (result.vulnerabilities !== undefined) summary += `${result.vulnerabilities} vulnerabilities, `;
