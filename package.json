@@ -1,5 +1,5 @@
 {
-  "name": "self-serve-code-review-tool",
+  "name": "@selectamitpatra/code-review-tool",
   "version": "1.4.4",
   "description": "Universal code review and quality analysis tool for microservices with weighted test scoring (80/20 split for core logic vs infrastructure, 10 points total)",
   "main": "lib/index.js",
@@ -54,13 +54,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/amitselectcarleasing/self-serve-code-review-tool.git"
+    "url": "https://github.com/selectamitpatra/code-review-tool.git"
   },
   "publishConfig": {
     "access": "public"
   },
   "bugs": {
-    "url": "https://github.com/amitselectcarleasing/self-serve-code-review-tool/issues"
+    "url": "https://github.com/selectamitpatra/code-review-tool/issues"
   },
-  "homepage": "https://github.com/amitselectcarleasing/self-serve-code-review-tool#readme"
+  "homepage": "https://github.com/selectamitpatra/code-review-tool#readme"
 }
