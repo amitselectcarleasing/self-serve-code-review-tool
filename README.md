@@ -1,16 +1,27 @@
-# @self-serve/code-review-tool
+# @selectamitpatra/code-review-tool
 
-Universal code review and quality analysis tool for microservices.
+Universal code review and quality analysis tool for microservices with weighted test scoring (80/20 split for core logic vs infrastructure, 10 points total).
+
+[![npm version](https://badge.fury.io/js/@selectamitpatra%2Fcode-review-tool.svg)](https://www.npmjs.com/package/@selectamitpatra/code-review-tool)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## 📚 Documentation
+
+- **[Publishing Guide](./PUBLISHING_GUIDE.md)** - Complete guide for versioning and publishing the package
+- **[Release Checklist](./RELEASE_CHECKLIST.md)** - Step-by-step checklist for releases
 
 ## 🚀 Quick Start
 
 ```bash
 # Install globally
-npm install -g @self-serve/code-review-tool
+npm install -g @selectamitpatra/code-review-tool
+
+# Or install as dev dependency
+npm install --save-dev @selectamitpatra/code-review-tool
 
 # Initialize in your project
 cd your-microservice
-self-serve-review init --template=api-gateway
+self-serve-review init --template=backend-service
 
 # Run analysis
 self-serve-review analyze
